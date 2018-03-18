@@ -1,2 +1,2 @@
 # AndroidThingsWorkshop
-GDG London Android Things Workshop - Feb 2018
+Firebase and Google assistant Android Things Workshop - March 2018
