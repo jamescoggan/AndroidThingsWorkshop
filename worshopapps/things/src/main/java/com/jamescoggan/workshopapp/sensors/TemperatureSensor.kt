@@ -1,7 +1,7 @@
 package com.jamescoggan.workshopapp.sensors
 
 import com.google.android.things.pio.I2cDevice
-import com.google.android.things.pio.PeripheralManagerService
+import com.google.android.things.pio.PeripheralManager
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
@@ -18,7 +18,7 @@ class TemperatureSensor(private val portName: String, private val refreshTime: L
 
     override fun open() {
         close()
-        i2cDevice = PeripheralManagerService().openI2cDevice(portName, I2C_ADDRESS)
+        i2cDevice = PeripheralManager.getInstance().openI2cDevice(portName, I2C_ADDRESS)
         requestData()
     }
 

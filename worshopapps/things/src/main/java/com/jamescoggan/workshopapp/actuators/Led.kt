@@ -1,7 +1,7 @@
 package com.jamescoggan.workshopapp.actuators
 
 import com.google.android.things.pio.Gpio
-import com.google.android.things.pio.PeripheralManagerService
+import com.google.android.things.pio.PeripheralManager
 
 class Led(private val portName: String) : Actuator<Boolean> {
 
@@ -9,7 +9,7 @@ class Led(private val portName: String) : Actuator<Boolean> {
 
     override fun open() {
         close()
-        gpio = PeripheralManagerService().openGpio(portName)
+        gpio = PeripheralManager.getInstance().openGpio(portName)
         gpio?.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW)
     }
 
