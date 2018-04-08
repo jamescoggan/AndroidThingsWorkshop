@@ -1,7 +1,7 @@
-// The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
-const functions = require('firebase-functions');
+'use strict';
 
-// The Firebase Admin SDK to access the Firebase Realtime Database.
+const functions = require('firebase-functions');
+const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
@@ -12,11 +12,6 @@ exports.readTemperature = functions.https.onRequest((req, res) => {
         res.status(200).send('Your temperature at home is: ' + result + "\n");
     });
 });
-
-'use strict';
-
-// const functions = require('firebase-functions'); // Cloud Functions for Firebase library
-const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
 
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
     console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
@@ -66,19 +61,6 @@ function processRequest(request, response) {
         sendSimpleMessage('Setting your light to ' + value);
     }
 
-    // function setLight() {
-    //     let state = parameters.state ? parameters.state : 'off';
-    //     let value = state === 'on';
-    //     writeToLightDb(value);
-    // }
-    //
-    // function writeToLightDb(value) {
-    //     return admin.database().ref('/home/light').set(value => {
-    //         let message = 'Setting your light to ' + value;
-    //         sendSimpleMessage(message);
-    //     });
-    // }
-
     function temperatureRead() {
         var responseText = 'Unable to read temperature';
         admin.database().ref('/home').once('value', (snapshot) => {
@@ -96,7 +78,6 @@ function processRequest(request, response) {
                 sendGoogleResponse(responseToUser);
             } else {
                 let responseToUser = {
-                    //data: richResponsesV1, // Optional, uncomment to enable
                     speech: responseText,
                     text: responseText
 
