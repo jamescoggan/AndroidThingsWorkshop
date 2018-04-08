@@ -46,3 +46,6 @@ kotlin {
         coroutines "enable"
     }
 }
+
+//Todo: Add the missing google-services.json and uncomment the line below
+// apply plugin: 'com.google.gms.google-services'
