@@ -13,7 +13,7 @@ import com.jamescoggan.workshopapp.sensors.Switch
 import com.jamescoggan.workshopapp.sensors.TemperatureSensor
 import timber.log.Timber
 
-class MainActivity : AppCompatActivity() {
+class ThingsActivity : AppCompatActivity() {
 
     companion object {
         private const val REFRESH_TIME = 2000L // Refresh every 2 seconds
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_things)
     }
 
     override fun onStart() {
