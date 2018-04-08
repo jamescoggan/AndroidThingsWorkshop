@@ -22,15 +22,6 @@ apt-get install nodejs
 ## Login firebase
 ```firebase login```
 
-## Create your project
-
-- Create a project folder
-
-```firebase init```
-
-## Deploy your project 
-```firebase deploy```
-
 ## Init
 ```firebase init functions```
 
@@ -44,6 +35,12 @@ apt-get install nodejs
 
 - Do you want to install dependencies with npm now? (Y/n) Yes
 
+## Install the google actions
+
+As default node doesn't come with the actions on google, so we need to install them, open your functions folder and install it with npm
+
+`cd functions; npm install actions-on-google`
+
 ## Create your first cloud function
 
 Now its time to create your first cloud function, as a start we are doing to read our database reference once and return the value.
@@ -51,47 +48,42 @@ Now its time to create your first cloud function, as a start we are doing to rea
 - Open the `index.js` and paste the code below
 
 ```
-const functions = require('firebase-functions');
+'use strict';
 
+const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
 exports.readTemperature = functions.https.onRequest((req, res) => {
     return admin.database().ref('/home').once('value', (snapshot) => {
-        let result = parseFloat(Math.round(snapshot.val().temperature * 100) / 100).toFixed(2); // 2 decimal points
-        res.status(200).send('Your temperature at home is: ' + result + "Celsius \n");
+        let result = parseFloat(Math.round(snapshot.val().temperature * 100) / 100).toFixed(2);
+        console.log("result", result);
+        res.status(200).send('Your temperature at home is: ' + result + "\n");
     });
 });
 ```
 
 - Now deploy your function
- 
+
 ```firebase deploy```
 
 At the end you receive a result similar to this:
 
 `Function URL (readTemperature): https://xxxxxxx.cloudfunctions.net/readTemperature`
 
-you can open that url in your browser and get something like this
+you can copy and open that url in your browser and get something like this
 `Your temperature at home is: 28.00`
 
 You can also open your cloud functions in the Firebase console and see the logs of the method being executed
 
 ![](images/cloud_logs.png)
 
-## Install the google actions
-
-As default node doesn't come with the actions on google, so we need to install them, open your functions folder and install it with npm
-
-`cd functions; npm install actions-on-google`
-
-
 ## Create your dialogFlow function
 
 DialogFlow can communicate to cloud functions, for that to happen we need to create a function to handle those requests
 
 - Create the new function
-- Paste the code below in your `index.js` 
+- Paste the code below in your `index.js`
 
 ```
 // index.js
@@ -100,16 +92,15 @@ const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assi
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
     console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
     console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
-    
+
     return response.status(400).end('Not implemented');
 });
 ```
 
-- Save and deploy using `firebase deploy --only functions:dialogflowFirebaseFulfillment
+- Save and deploy using `firebase deploy --only functions:dialogflowFirebaseFulfillment`
 - Copy the new link generated
-`
 
-## Creating your DialogFlow project 
+## Creating your DialogFlow project
 
 Now that we have our DialogFlow function, we can create a project to use it
 
@@ -139,12 +130,12 @@ Now that we have our DialogFlow function, we can create a project to use it
 ## Setting up the Webhook
 
 - Open the Fulfillment tab
-- Add the dialogflowFirebaseFulfillment function you copied above
+- Add the dialogflowFirebaseFulfillment function URL you copied above
 
 ![](images/fulfillment.png)
 
 - On the top right of the page you can try your new intent
-- Write `Temperate at home` 
+- Write `Temperate at home`
 - You will get an error, the reason for that is that we haven't implemented any DialogFlow answer on our function
 
 ## Implementing the DialogFlow logic in your cloud function
@@ -155,6 +146,20 @@ The code below has a unknown request answer and one when the action is `input.te
 - Copy paste the code
 
 ```
+'use strict';
+
+const functions = require('firebase-functions');
+const DialogflowApp = require('actions-on-google').DialogflowApp; // Google Assistant helper library
+const admin = require('firebase-admin');
+admin.initializeApp(functions.config().firebase);
+
+exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
+    console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
+    console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
+
+    processRequest(request, response);
+});
+
 function processRequest(request, response) {
     let action = request.body.result.action; // https://dialogflow.com/docs/actions-and-parameters
     let parameters = request.body.result.parameters; // https://dialogflow.com/docs/actions-and-parameters
@@ -191,7 +196,6 @@ function processRequest(request, response) {
             responseText = 'Your temperature at home is: ' + result + "\n";
             console.log(responseText);
 
-            // Use the Actions on Google lib to respond to Google requests; for other requests use JSON
             if (requestSource === googleAssistantRequest) {
                 let responseToUser = {
                     speech: responseText,
@@ -200,7 +204,6 @@ function processRequest(request, response) {
                 sendGoogleResponse(responseToUser);
             } else {
                 let responseToUser = {
-                    //data: richResponsesV1, // Optional, uncomment to enable
                     speech: responseText,
                     text: responseText
 
@@ -293,16 +296,16 @@ To be able to have the parameter, we create something called an entity.
 ![](images/action_light.png)
 
 
-- Enable the fulfillment and paste the same webhook
+- Enable the fulfillment
 - Test: `switch my light on`
 
 ![](images/switch_test.png)
 
 ## Updating the cloud functions code
 
-Add the light state code
+Add the light state code in the index.js
 
-``` 
+```
     function setLight() {
         let state = parameters.state ? parameters.state : 'off';
         let value = state === 'on';
@@ -317,7 +320,7 @@ Add the light state code
 
 Update the action call
 
-``` 
+```
     console.log("Received action: ", action);
     if (action === 'input.temperature') {
         temperatureRead();
@@ -327,6 +330,8 @@ Update the action call
         unknownRequest()
     }
 ```
+
+You can see the full `index.js` [here](https://github.com/jamescoggan/AndroidThingsWorkshop/blob/master/cloudfunctions/functions/index.js)
 
 ## Using the google assistant
 
@@ -350,9 +355,4 @@ Its easy as pie, just say/type `Talk to my test app` and interact with your new 
 
 ![](images/google_assistant.png)
 
-- Once finished say `Goodbye` 
-
-
-
-
-
+- Once finished say `Goodbye`
