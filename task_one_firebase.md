@@ -1,4 +1,4 @@
-## Setup
+# Setup
 
 Since the Firebase services are stored in the cloud, we need to setup the wifi on our Android Things so it can communicate to the internet.
 
@@ -19,7 +19,7 @@ This project contains 3 modules:
 - mobile: this is our mobile phone application
 
 ---
-## Connect the pins
+## 1. Connect the pins
 
 Now that we have our software setup, we need to connect our hardware together.
 The pins are same as the previous tasks, so if you are already setup, you don't need this.
@@ -27,69 +27,71 @@ The pins are same as the previous tasks, so if you are already setup, you don't 
 ![](Diagrams/Temperature_Sensor/pi%20with%20temp%20sensor_bb.png)
 
 ---
-## Create a Firebase project
+## 2. Create a Firebase project and add it to the apps
 
 There are 2 ways to setup Firebase from the console or in AndroidStudio.
 
-## In the Firebase console
+### A. In the Firebase console
 
-### Open the console
+#### 1. Open the console
 
-Open the Firebase [console](https://console.firebase.google.com)
+Open the [Firebase Console](https://console.firebase.google.com)
 
 ---
-### Add a new project
+#### 2. Add a new project
 
 Create a new project
 
 ![](images/add_project.png)
 
 ---
-### Add project details
+#### 3. Add project details
 
 For the new project, any name is fine.
 
 ![](images/new_project.png)
 
 ---
-### Add Firebase to the Android apps
+#### 4. Add Firebase to the Android apps
 
 Now that we have a Firebase project, we need to add it to our Android Project
 
 ![](images/add_to_android.png)
 
 ---
-### Setup the Android package name
+#### 5. Setup the Android package name
 
 The package name must match the one in your project, in this case `com.jamescoggan.workshopapp`
 
 ![](images/package_name.png)
 
 ---
-### Download the json file
+#### 6. Download the json file
 
 After that the package name is setup, you need to download the JSON file, this file is used in the project to configure your Android apps with Firebase.
 
 ![](images/download_json.png)
 
 ---
-### Add the JSON to the apps
+#### 7. Add the JSON to the apps
 
 Because we have 2 apps (One for the Android things, another for the mobile phone) you need to add the JSON to both modules root folder as shown below.
 
 ![](images/services_json.png)
 
 ---
-## With Android Studio
+### B. In Android Studio
 
-Alternatively you can create it in Android Studio, if you have done the setup above, skip to Step 14
+Alternatively you can create it in Android Studio. [If you have done the setup in Firebase Console above, skip to the step 3.](#3-open-the-firebase-console)
 
-### Step 1
+#### 1. Open Firebase Assistant in Android Studio
+
+Click on `Tools` > `Firebase`
 
 ![](images/step1.png)
 
 ---
-### Step 2
+#### 2. Expand Realtime Database section
 
 Android Studio will open a new tab that gives your a list of all the features you can automatically install.
 In this case we wan't to use the Firebase Realtime database.
@@ -97,84 +99,76 @@ In this case we wan't to use the Firebase Realtime database.
 ![](images/step2.png)
 
 ---
-### Step 3
+#### 3. Open save and retrieve data page
 
-Select the option
+Click on the `Save and retrieve data` button
 
 ![](images/step3.png)
 
 ---
-### Step 4
-First of all, you need to connect your Android Studio to Firebase, so select the button connect to Firebase
+#### 4. Connect Android Studio to Firebase
+First of all, you need to connect your Android Studio to Firebase, so select the click on the `Connect to Firebase` button.
 
 ![](images/step4.png)
-
----
-### Step 5
 
 ![](images/step5.png)
 
 ---
-### Step 6
+#### 5. Select the Firebase project you want to use or create a new one.
 
 You need to select what project you want to connect, or you can create a new one.
 
 ![](images/step6.png)
 
 ---
-### Step 7
+#### 6. Connect the `mobile` and `things` modules to Firebase
 
 Once connected you can choose the module you want to connect to Firebase, you will need to connect to the mobile and things modules, so to this step twice
 
 ![](images/step7.png)
 
 ---
-### Step 8
+#### 7. Add changes to your gradle files
 
 And add the changes to your gradle files. In this case we wan't to connect both
 
 ![](images/step8.png)
 
 ---
-### Step 9
+#### 8. Confirm you've added both modules
 
 You have added one module to the Firebase project
 
 ![](images/step9.png)
 
 ---
-### Step 10
+## 3. Open the Firebase Console
 
 Now open the [Firebase Console](https://console.firebase.google.com)
 
 ![](images/step10.png)
 
 ---
-### Step 11
+## 4. Navigate to the authentication tab
 
 And open the authentication tab
 
 ![](images/step11.png)
 
 ---
-### Step 12
+## 3. Enable anonymous login
 
 For this lesson we are going to use the anonymous login, but remember you need to change this for a production build.
 So select the anonymous option.
 
 ![](images/step12.png)
 
----
-### Step 13
-
-And activate it
+and enable it.
 
 ![](images/step13.png)
 
 ---
-## Enable the loading of the play services
-
-### Step 14
+## 4. Enable the loading of the play services
 
 Because the JSON files were missing ,the loading of the play services was disabled, so now we need to add that code again in both modules, for that:
 
@@ -205,12 +199,12 @@ apply plugin: 'com.google.gms.google-services'
 ```
 
 ---
-## Check the common module files
+## 5. Check the common module files
 
 The common module already has the files needed to save and retrieve data from Firebase, lets have a look at them.
 The files are located in `common/src/main/java/com.jamescoggan.common`
 
-### Step 15
+### `HomeInformation.kt`
 
 The `HomeInformation.kt` file contains the data structure used to save and retrieve data from Firebase
 
@@ -222,7 +216,7 @@ data class HomeInformation(var button: Boolean = false,
 ```
 
 ---
-### Step 16
+### `HomeInformationLiveData.kt`
 
 We want to observe data changes for the HomeInformation reference in the database.
 For better isolation of the code, we are going to use LiveData from the Architectural Components, we could use the value listener direct or implement LiveData on it. 
@@ -254,7 +248,7 @@ class HomeInformationLiveData(private val databaseReference: DatabaseReference) 
 ```
 
 ---
-### Step 17
+### `HomeInformationStorage.kt`
 
 On the other side, we want to store data in the database, so we are going to isolate the logic in a similar way and in the `HomeInformationStorage` class
 
@@ -282,11 +276,9 @@ class HomeInformationStorage(private val reference: DatabaseReference) {
 ```
 
 ---
-### Step 18
+## 6. Setup Firebase on the `things` module
 
 Now that we have looked at the common module files to read/write in Firebase, now is the time to add the logic to our modules, first lets start with Android Things.
-
-## Setup Firebase on the Things
 
 Before we can read/store data we need to connect to Firebase, then once connected we can observe the data.
 So we are going to load the FirebaseApp on our app creation, and login when our activity is started.
@@ -316,9 +308,9 @@ FirebaseApp.initializeApp(this)
 ```
 
 ---
-### Step 19
+## 7. Setup LiveData and storage on the `things` module
 
-On the same activity, we need to setup or LiveData and storage, so on our observeData we are going to load our database reference and create the instances of those objects.
+On the same activity, we need to setup LiveData and storage, so on our observeData we are going to load our database reference and create the instances of those objects.
 For our implementation of the observer, when we receive the light object, we set that value in the LED.
 
 ```
@@ -343,7 +335,7 @@ For our implementation of the observer, when we receive the light object, we set
 ```
 
 ---
-### Step 20
+## 8. Store data when button state or temperature changes
 
 On the case of the button and temperature changes, we are going to store them in our database when changed.
 
@@ -361,24 +353,20 @@ On the case of the button and temperature changes, we are going to store them in
     }
 ```
 
-Now you can launch your Android Things app. 
-If you open the Firebase Console, and expand your database, you will see something similar than the image below, where the data is being updated from the Android Things.
+## 9. Run the `things` module
 
-[](images/step16.png)
+Now you can launch your Android Things app. On Android Studio, select the Things module and click the play/run button to run the app in your Android Things device.
 
-### Run the Things project
+[](https://github.com/jamescoggan/AndroidThingsWorkshop/blob/7bd9559e6922fbb9f7ed9b0c360f25b14359d439/images/run.png)
 
-On Android Studio, select the Things module and click the play button to run the app in your Android Things device.
+If you open the Firebase Console, and expand your database, you will see something similar to the image below, where the data is being updated from the Android Things.
 
-[](images/run.png)
-
----
-## Setup Firebase on the Mobile
-
-If you want to also run the app on your Android Phone, you can continue No we need to do the same approach in the mobile app, with some slight differences.
+[](https://github.com/jamescoggan/AndroidThingsWorkshop/blob/3a0f38ebf0f4f1a6086062eacee314aebff99539/images/step16.png)
 
 ---
-### Step 20
+## 10. Setup Firebase on the `mobile` module
+
+If you want to also run the app on your Android Phone, you can continue. Now we need to do the same approach in the mobile app, with some slight differences.
 
 Same as the things application, we need to load our FirebaseApp on app creation and login into Firebase on activity load.
 For the case of the mobile app we are using the onResume method instead.
@@ -408,7 +396,7 @@ FirebaseApp.initializeApp(this)
 ```
 
 ---
-### Step 21
+## 11. Add UI elements to the `activity_mobile.xml` file
 
 On the mobile app we want to be able to interact with the database changes, so we need to create a few UI elements in our `activity_mobile.xml` file
 
@@ -449,7 +437,7 @@ On the mobile app we want to be able to interact with the database changes, so w
 ```
 
 ---
-### Step 22
+## 12. Setup the `mobile` module to observe data changes
 
 Now we setup the observer of the data changes and set the UI accordingly
 Also remember to stop observing the data on pause.
@@ -474,7 +462,7 @@ Also remember to stop observing the data on pause.
 ```
 
 ---
-### Step 23
+## 13. Observe data changes
 
 Now we can observe the data after the login success
 
@@ -496,7 +484,7 @@ Now we can observe the data after the login success
 ```
 
 ---
-### Step 24
+## 14. Save the button state to the database
 
 For our toggle button, we wan't to save its state selection in the led object of the database.
 
