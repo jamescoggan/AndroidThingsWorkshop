@@ -1,22 +1,22 @@
 {
-  "name": "functions",
-  "description": "Cloud Functions for Firebase",
+  "name": "dialogflowFirebaseFulfillment",
+  "description": "This is the default fulfillment for a Dialogflow agents using Cloud Functions for Firebase",
+  "version": "0.0.1",
+  "private": true,
+  "license": "Apache Version 2.0",
+  "author": "Google Inc.",
+  "engines": {
+    "node": "~6.0"
+  },
   "scripts": {
-    "lint": "./node_modules/.bin/eslint .",
-    "serve": "firebase serve --only functions",
-    "shell": "firebase experimental:functions:shell",
-    "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "start": "firebase serve --only functions:dialogflowFirebaseFulfillment",
+    "deploy": "firebase deploy --only functions:dialogflowFirebaseFulfillment"
   },
   "dependencies": {
-    "actions-on-google": "^1.8.2",
-    "firebase-admin": "~5.8.1",
-    "firebase-functions": "^0.8.1"
-  },
-  "devDependencies": {
-    "eslint": "^4.12.0",
-    "eslint-plugin-promise": "^3.6.0"
-  },
-  "private": true
+    "actions-on-google": "2.2.0",
+    "firebase-admin": "~5.12.1",
+    "firebase-functions": "^1.1.0",
+    "dialogflow": "^4.0.3",
+    "dialogflow-fulfillment": "0.4.1"
+  }
 }
