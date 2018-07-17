@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.google.android.things.pio.Gpio
 import com.google.android.things.pio.PeripheralManager
+import com.google.firebase.auth.FirebaseAuth
 import com.jamescoggan.workshopapp.port.gpioForButton
 import com.jamescoggan.workshopapp.port.gpioForLED
 import com.jamescoggan.workshopapp.port.i2cForTempSensor
@@ -38,6 +39,15 @@ class ThingsActivity : AppCompatActivity() {
 
         tempSensor.open() // open the port
         tempSensor.setListener{value: Int -> Timber.d("Current temperature $value")}
+
+        loginFirebase()
+    }
+
+    private fun loginFirebase() {
+        val firebase = FirebaseAuth.getInstance()
+        firebase.signInAnonymously()
+                .addOnSuccessListener { Timber.d("Firebase logged in successfully") }
+                .addOnFailureListener { Timber.e("Failed to login $it") }
     }
 
     override fun onStop() {
