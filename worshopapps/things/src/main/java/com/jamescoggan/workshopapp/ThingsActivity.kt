@@ -15,22 +15,6 @@ import timber.log.Timber
 
 class ThingsActivity : AppCompatActivity() {
 
-    companion object {
-        private const val REFRESH_TIME = 2000L // Refresh every 2 seconds
-    }
-
-    private var led: Actuator<Boolean> = Led(gpioForLED)
-    private var tempSensor: Sensor<Int> = TemperatureSensor(i2cForTempSensor, REFRESH_TIME)
-    private var switch: Sensor<Boolean> = Switch(gpioForButton)
-
-    private val switchListener = object : OnStateChangeListener<Boolean> {
-        override fun onStateChanged(state: Boolean) = onSwitch(state)
-    }
-
-    private val tempSensorListener = object : OnStateChangeListener<Int> {
-        override fun onStateChanged(state: Int) = onTemp(state)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_things)
@@ -38,29 +22,11 @@ class ThingsActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-
-        led.open()
-        switch.open()
-        tempSensor.open()
-
-        switch.setListener(switchListener)
-        tempSensor.setListener(tempSensorListener)
+        // Place your code on activity start here
     }
 
     override fun onStop() {
-        led.close()
-        switch.close()
-        tempSensor.close()
-
+        // Place your code on activity stop here
         super.onStop()
-    }
-
-    private fun onSwitch(state: Boolean) {
-        Timber.d("Button pressed: $state")
-        led.setState(state)
-    }
-
-    private fun onTemp(state: Int) {
-        Timber.d("Current Temperature: $state")
     }
 }
