@@ -3,14 +3,10 @@ package com.jamescoggan.workshopapp
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.google.android.things.pio.Gpio
-import com.google.android.things.pio.GpioCallback
-import com.google.android.things.pio.I2cDevice
 import com.google.android.things.pio.PeripheralManager
 import com.jamescoggan.workshopapp.port.gpioForButton
 import com.jamescoggan.workshopapp.port.gpioForLED
 import com.jamescoggan.workshopapp.port.i2cForTempSensor
-import com.jamescoggan.workshopapp.sensors.OnStateChangeListener
-import com.jamescoggan.workshopapp.sensors.Sensor
 import com.jamescoggan.workshopapp.sensors.TemperatureSensor
 import timber.log.Timber
 
@@ -18,7 +14,7 @@ class ThingsActivity : AppCompatActivity() {
 
     private lateinit var led: Gpio
     private lateinit var button: Gpio
-    private lateinit var tempSensor : I2cDevice
+    private val tempSensor = TemperatureSensor(i2cForTempSensor, 2000L) // Read temperature every 2 seconds
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,12 +36,8 @@ class ThingsActivity : AppCompatActivity() {
             true // Return true so we continue monitoring the button events
         }
 
-        tempSensor = PeripheralManager.getInstance().openI2cDevice(i2cForTempSensor, 0x4A)
-        tempSensor.write(ByteArray(1), 1)
-        val buffer = ByteArray(1)
-        tempSensor.read(buffer, 1)
-        val temperature: Int = buffer[0].toInt() and 0xff
-        Timber.d("Current temperature: $temperature")
+        tempSensor.open() // open the port
+        tempSensor.setListener{value: Int -> Timber.d("Current temperature $value")}
     }
 
     override fun onStop() {
