@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.jamescoggan.workshopapp">
+
+    <uses-permission android:name="com.google.android.things.permission.USE_PERIPHERAL_IO"/>
+    <uses-permission android:name="com.google.android.things.permission.MANAGE_INPUT_DRIVERS" />
 
     <application
         android:name=".ThingsApplication"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:allowBackup="false"
+        tools:ignore="GoogleAppIndexingWarning,MissingApplicationIcon">
         <uses-library android:name="com.google.android.things" />
 
         <activity android:name=".ThingsActivity">
