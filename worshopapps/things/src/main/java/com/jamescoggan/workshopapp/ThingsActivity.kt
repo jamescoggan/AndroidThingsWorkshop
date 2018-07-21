@@ -5,8 +5,12 @@ import android.support.v7.app.AppCompatActivity
 import com.google.android.things.pio.Gpio
 import com.google.android.things.pio.PeripheralManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.jamescoggan.workshopapp.model.HomeInformation
 import com.jamescoggan.workshopapp.port.gpioForButton
 import com.jamescoggan.workshopapp.port.gpioForLED
 import com.jamescoggan.workshopapp.port.i2cForTempSensor
@@ -56,8 +60,26 @@ class ThingsActivity : AppCompatActivity() {
                 .addOnSuccessListener {
                     Timber.d("Firebase logged in successfully")
                     dbReference = FirebaseDatabase.getInstance().reference.child("home")
+                    observeChanges()
                 }
                 .addOnFailureListener { Timber.e("Failed to login $it") }
+    }
+
+    private fun observeChanges() {
+        dbReference?.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                Timber.e("Something has gone wrong: ${error.message}")
+            }
+
+            override fun onDataChange(homeValue: DataSnapshot) {
+                val homeInformation = homeValue.getValue(HomeInformation::class.java) // Convert the value to the HomeInformation data class
+                Timber.d("New value received: $homeInformation")
+                homeInformation?.let { // If homeInformation not null
+                    led.value = it.light // Set the LED to the light boolean value
+                }
+            }
+
+        })
     }
 
     override fun onStop() {
