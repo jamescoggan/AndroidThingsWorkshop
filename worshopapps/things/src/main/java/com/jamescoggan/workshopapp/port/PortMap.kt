@@ -7,7 +7,7 @@ private const val DEVICE_RPI3 = "rpi3"
 private const val DEVICE_IMX6UL_PICO = "imx6ul_pico"
 private const val DEVICE_IMX7D_PICO = "imx7d_pico"
 
-val gpioForButton: String // Pin 40
+val gpioForLED: String // Pin 40
     get() {
         return when (Build.DEVICE) {
             DEVICE_RPI3 -> "BCM21"
@@ -17,7 +17,7 @@ val gpioForButton: String // Pin 40
         }
     }
 
-val gpioForLED: String // Pin 31
+val gpioForButton: String // Pin 31
     get() {
         return when (Build.DEVICE) {
             DEVICE_RPI3 -> "BCM6"
