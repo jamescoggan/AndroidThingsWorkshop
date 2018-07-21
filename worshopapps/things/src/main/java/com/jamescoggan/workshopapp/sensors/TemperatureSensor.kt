@@ -6,7 +6,8 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 
-class TemperatureSensor(private val portName: String, private val refreshTime: Long) : Sensor<Int> {
+class TemperatureSensor(private val portName: String, private val refreshTime: Long) {
+
     companion object {
         private const val I2C_ADDRESS = 0x4A
         private val ZERO = ByteArray(1)
@@ -14,21 +15,21 @@ class TemperatureSensor(private val portName: String, private val refreshTime: L
 
     private var job: Job? = null
     private var i2cDevice: I2cDevice? = null
-    private var listener: OnStateChangeListener<Int>? = null
+    private var listener: ((Int) -> Unit)? = null
 
-    override fun open() {
+    fun open() {
         close()
         i2cDevice = PeripheralManager.getInstance().openI2cDevice(portName, I2C_ADDRESS)
         requestData()
     }
 
-    override fun setListener(listener: OnStateChangeListener<Int>?) {
+    fun setListener(listener: (Int) -> Unit) {
         this.listener = listener
         job?.cancel()
-        listener?.let { startJob() }
+        startJob()
     }
 
-    override fun close() {
+    fun close() {
         job?.cancel()
         listener = null
         i2cDevice?.close().also {
@@ -42,7 +43,7 @@ class TemperatureSensor(private val portName: String, private val refreshTime: L
             val buffer = ByteArray(1)
             it.read(buffer, 1)
             val temperature: Int = buffer[0].toInt() and 0xff
-            listener?.onStateChanged(temperature)
+            listener?.let { it(temperature) }
         }
     }
 
