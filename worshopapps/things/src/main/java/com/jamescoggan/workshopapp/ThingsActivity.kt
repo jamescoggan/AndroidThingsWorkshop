@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity
 import com.google.android.things.pio.Gpio
 import com.google.android.things.pio.PeripheralManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.jamescoggan.workshopapp.port.gpioForButton
 import com.jamescoggan.workshopapp.port.gpioForLED
 import com.jamescoggan.workshopapp.port.i2cForTempSensor
@@ -15,6 +17,7 @@ class ThingsActivity : AppCompatActivity() {
 
     private lateinit var led: Gpio
     private lateinit var button: Gpio
+    private var dbReference: DatabaseReference? = null
     private val tempSensor = TemperatureSensor(i2cForTempSensor, 2000L) // Read temperature every 2 seconds
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,12 +36,16 @@ class ThingsActivity : AppCompatActivity() {
         button.setEdgeTriggerType(Gpio.EDGE_BOTH) // We want to detect on press and release
         button.registerGpioCallback { gpio ->
             Timber.d("Button pressed: ${gpio.value}") // Read and print the GPIO value
-            led.value = !gpio.value // Set the LED to the value, the reading is inverted
+            dbReference?.child("light")?.setValue(gpio.value)
+            dbReference?.child("button")?.setValue(gpio.value)
             true // Return true so we continue monitoring the button events
         }
 
         tempSensor.open() // open the port
-        tempSensor.setListener{value: Int -> Timber.d("Current temperature $value")}
+        tempSensor.setListener { value: Int ->
+            Timber.d("Current temperature $value")
+            dbReference?.child("temperature")?.setValue(value)
+        }
 
         loginFirebase()
     }
@@ -46,7 +53,10 @@ class ThingsActivity : AppCompatActivity() {
     private fun loginFirebase() {
         val firebase = FirebaseAuth.getInstance()
         firebase.signInAnonymously()
-                .addOnSuccessListener { Timber.d("Firebase logged in successfully") }
+                .addOnSuccessListener {
+                    Timber.d("Firebase logged in successfully")
+                    dbReference = FirebaseDatabase.getInstance().reference.child("home")
+                }
                 .addOnFailureListener { Timber.e("Failed to login $it") }
     }
 
