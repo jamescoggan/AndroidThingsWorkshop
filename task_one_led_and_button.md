@@ -202,9 +202,9 @@ Now we want to detect the button events and set the LED to that value when press
 override fun onStart() {
     super.onStart()
 
-    led = PeripheralManager.getInstance().openGpio(gpioForButton) // Open the LED port
+    led = PeripheralManager.getInstance().openGpio(gpioForLED) // Open the LED port
     led.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW) // Set the port to OUT with initial LOW
-    button = PeripheralManager.getInstance().openGpio(gpioForLED) // Open the Button Port
+    button = PeripheralManager.getInstance().openGpio(gpioForButton) // Open the Button Port
     button.setDirection(Gpio.DIRECTION_IN) // Set the port to IN for reading
     button.setActiveType(Gpio.ACTIVE_LOW) // Active type is low, when button is grounded
     button.setEdgeTriggerType(Gpio.EDGE_BOTH) // We want to detect on press and release
