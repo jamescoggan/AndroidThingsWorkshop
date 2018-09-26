@@ -165,14 +165,18 @@ And add the new intent handler:
 ```javascript
 app.intent('SetLight', (conv, params) => { // Function to handle the SetLight intent
     let value = params['light']; // Read the light parameter
-        return admin.database().ref('/home/light').set(value).then(()=>{ // Set the parameter in the database
-            conv.ask("Setting light to " + value);
-            var image = ""; // To make it fancy, lets create a response with an image
-            if(value === 'true'){
-                image = "https://raw.githubusercontent.com/jamescoggan/AndroidThingsWorkshop/master/images/light_on.png";
-            } else {
-                image = "https://raw.githubusercontent.com/jamescoggan/AndroidThingsWorkshop/master/images/light_off.png";
-            }
+    conv.ask("Setting light to " + value);
+    var image = ""; // To make it fancy, lets create a response with an image
+    var lightStatus = false;
+    if(value === 'true'){
+        lightStatus = true;
+        image = "https://raw.githubusercontent.com/jamescoggan/AndroidThingsWorkshop/master/images/light_on.png";
+    } else {
+        lightStatus = false;
+        image = "https://raw.githubusercontent.com/jamescoggan/AndroidThingsWorkshop/master/images/light_off.png";
+     }
+
+     return admin.database().ref('/home/light').set(lightStatus).then(()=>{ // Set the parameter in the database
             conv.ask(new BasicCard({ // Now display a card with the image
             title: "Light",
             image: {
